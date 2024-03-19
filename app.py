@@ -3,14 +3,12 @@ from streamlit_modal import Modal
 import streamlit.components.v1 as components
 
 from utils import map_time_to_period
-from html_content import container_html, script
 from api import fetch_tutors, fetch_tutor_username
 
 from mapping import zone_mapping, course_mapping
 from config import zones, schools, courses, available_hours
 
 def main():
-
     st.title("Oso de anteojos")
     st.text("")
     st.text("")
@@ -72,7 +70,7 @@ def main():
             and (len(saturday) == 0 or any(p in map_time_to_period(tutor["saturday"]) for p in saturday))
             and (len(sunday) == 0 or any(p in map_time_to_period(tutor["sunday"]) for p in sunday))
             and (len(zone) == 0 or any(z in tutor["zone"] for z in selected_zones))
-            and (len(school) == 0 or any(s in tutor["school"] for s in schools))
+            and (len(school) == 0 or any(s in tutor.get("school", "") for s in school))
             and (tutor["active"] == "true")
         )
     ]
@@ -99,8 +97,56 @@ def main():
                     username = fetch_tutor_username(tutor["email"])
                     classKind = "presencial" if zone else "virtual"
 
-                    script.replace("userTagName", username).replace("typeOfClass", classKind)
-                    components.html(container_html + script, height=600)             
+                    container_html = '''
+                        <div id="my-cal-inline" style= "width: 100%; height: 600px; overflow: auto;"></div>
+                    '''
+
+                    script_html = '''
+                        <script type="text/javascript">
+                        (function (C, A, L) {
+                            let p = function (a, ar) {
+                                a.q.push(ar);
+                            };
+                            let d = C.document;
+                            C.Cal =
+                                C.Cal ||
+                                function () {
+                                    let cal = C.Cal;
+                                    let ar = arguments;
+                                    if (!cal.loaded) {
+                                        cal.ns = {};
+                                        cal.q = cal.q || [];
+                                        d.head.appendChild(d.createElement("script")).src = A;
+                                        cal.loaded = true;
+                                    }
+                                    if (ar[0] === L) {
+                                        const api = function () {
+                                            p(api, arguments);
+                                        };
+                                        const namespace = ar[1];
+                                        api.q = api.q || [];
+                                        typeof namespace === "string"
+                                            ? (cal.ns[namespace] = api) && p(api, ar)
+                                            : p(cal, ar);
+                                        return;
+                                    }
+                                    p(cal, ar);
+                                };
+                        })(window, "https://app.cal.com/embed/embed.js", "init");
+                        Cal("init", { origin: "https://cal.com" });
+
+                        Cal("inline", {
+                            elementOrSelector: "#my-cal-inline",
+                            calLink: "userTagName/typeOfClass",
+                        });
+
+                        Cal("ui", {
+                            hideEventTypeDetails: true,
+                        });
+                        </script>
+                    '''.replace("userTagName", username).replace("typeOfClass", classKind)
+
+                    components.html(container_html + script_html, height=600)             
 
 if __name__ == "__main__":
     main()
