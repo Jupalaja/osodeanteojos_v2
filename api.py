@@ -19,3 +19,12 @@ def fetch_tutor_username(email):
     except requests.RequestException as e:
         st.error(f"Ocurrio un error trayendo el nombre de usuario del tutor: {e}")
         return "ERROR"
+    
+def send_api_key(api_key):
+    url = "https://mongo-backend-production.up.railway.app/apikey"
+    headers = {"Content-Type": "application/json"}
+    payload = {"apiKey": api_key}
+
+    # Make a POST request to the server
+    response = requests.post(url, json=payload, headers=headers)
+    return response.json()
