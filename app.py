@@ -172,7 +172,7 @@ def main():
             st.session_state['page'] = 'home'
 
     with col2:
-        if st.button('Claves API'):
+        if st.button('API Key'):
             st.session_state['page'] = 'apiKey'
 
     # Initialize session_state
