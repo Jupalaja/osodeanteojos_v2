@@ -150,20 +150,20 @@ def main():
                         components.html(container_html + script_html, height=600)             
 
     def apiKey():
-        api_key_input = st.text_input("Enter API key", "")
-        submit_button = st.button("Submit API Key")
+        api_key_input = st.text_input("Ingresa una clave API", "")
+        submit_button = st.button("Enviar")
 
         if submit_button:
             if api_key_input:
                 response_data = send_api_key(api_key_input)
                 if not response_data.get("ok"):
-                    st.error(response_data.get("message", "An error occurred"))
+                    st.error(response_data.get("message", "Hubo un error"))
                 else:
                     st.success(f"Tutor: {response_data['name']} Agregado")
                     # Show user information as JSON
                     st.json(response_data)
             else:
-                st.error("Please enter an API key.")
+                st.error("Ingresa una clave API")
 
 
     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
@@ -172,7 +172,7 @@ def main():
             st.session_state['page'] = 'home'
 
     with col2:
-        if st.button('Api Key'):
+        if st.button('Claves API'):
             st.session_state['page'] = 'apiKey'
 
     # Initialize session_state
