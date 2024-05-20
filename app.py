@@ -8,7 +8,16 @@ from api import fetch_tutors, fetch_tutor_username, send_api_key
 from mapping import zone_mapping, course_mapping
 from config import zones, schools, courses, available_hours
 
+
 def main():
+    hide_st_style = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        </style>
+        """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+
     def home():
         st.title("Oso de anteojos")
         st.text("")
@@ -164,7 +173,6 @@ def main():
                     st.json(response_data)
             else:
                 st.error("Ingresa una clave API")
-
 
     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
     with col1:
